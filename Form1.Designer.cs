@@ -29,6 +29,7 @@ namespace HashChecker
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.processFileButton = new System.Windows.Forms.Button();
             this.fileHashGood = new System.Windows.Forms.TextBox();
             this.fileHashGoodLabel = new System.Windows.Forms.Label();
@@ -39,6 +40,8 @@ namespace HashChecker
             this.button1 = new System.Windows.Forms.Button();
             this.outputLabel = new System.Windows.Forms.Label();
             this.outputText = new System.Windows.Forms.RichTextBox();
+            this.selectFile = new System.Windows.Forms.Button();
+            this.fileSelected = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // processFileButton
@@ -135,11 +138,32 @@ namespace HashChecker
             this.outputText.TabIndex = 8;
             this.outputText.Text = "";
             // 
+            // selectFile
+            // 
+            this.selectFile.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.selectFile.Location = new System.Drawing.Point(622, 119);
+            this.selectFile.Name = "selectFile";
+            this.selectFile.Size = new System.Drawing.Size(111, 36);
+            this.selectFile.TabIndex = 9;
+            this.selectFile.Text = "Open";
+            this.selectFile.UseVisualStyleBackColor = true;
+            this.selectFile.Click += new System.EventHandler(this.selectFile_Click);
+            // 
+            // fileSelected
+            // 
+            this.fileSelected.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.fileSelected.Location = new System.Drawing.Point(207, 119);
+            this.fileSelected.Name = "fileSelected";
+            this.fileSelected.Size = new System.Drawing.Size(396, 31);
+            this.fileSelected.TabIndex = 10;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(840, 787);
+            this.Controls.Add(this.fileSelected);
+            this.Controls.Add(this.selectFile);
             this.Controls.Add(this.outputText);
             this.Controls.Add(this.outputLabel);
             this.Controls.Add(this.button1);
@@ -149,8 +173,9 @@ namespace HashChecker
             this.Controls.Add(this.fileHashGoodLabel);
             this.Controls.Add(this.fileHashGood);
             this.Controls.Add(this.processFileButton);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.Text = "Code-O-Matic XL3000";
+            this.Text = "Hash-O-Matic XL3000";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -169,6 +194,8 @@ namespace HashChecker
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label outputLabel;
         private System.Windows.Forms.RichTextBox outputText;
+        private System.Windows.Forms.Button selectFile;
+        private System.Windows.Forms.TextBox fileSelected;
     }
 }
 
