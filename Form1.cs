@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace HashChecker
 {
-    public partial class Form1 : Form
+    public partial class Form1 : System.Windows.Forms.Form
     {
         public Form1()
         {
@@ -19,7 +19,7 @@ namespace HashChecker
 
         // initialize global class variables to hold textbox values and control variables
         private string hashCodeGood = "";
-        private string output = "After selecting your file and entering the hash key, relax while the Auto Hasher XL3000 does all the work";
+        private string output = "After selecting your file and entering the hash key, relax while the Hash-O-Matic XL3000 does all the work";
 
         // event handler for exitButton to exit program safely
         private void exitButton_Click(object sender, EventArgs e)

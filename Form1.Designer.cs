@@ -74,18 +74,18 @@ namespace HashChecker
             // title
             // 
             this.title.AutoSize = true;
-            this.title.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.title.Location = new System.Drawing.Point(221, 27);
+            this.title.Font = new System.Drawing.Font("Unispace", 24F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.title.Location = new System.Drawing.Point(227, 28);
             this.title.Name = "title";
-            this.title.Size = new System.Drawing.Size(334, 37);
+            this.title.Size = new System.Drawing.Size(397, 39);
             this.title.TabIndex = 3;
-            this.title.Text = "Auto Hasher XL3000";
+            this.title.Text = "Hash-O-Matic XL3000";
             // 
             // deluxe
             // 
             this.deluxe.AutoSize = true;
             this.deluxe.Font = new System.Drawing.Font("Segoe Script", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.deluxe.Location = new System.Drawing.Point(551, 47);
+            this.deluxe.Location = new System.Drawing.Point(630, 50);
             this.deluxe.Name = "deluxe";
             this.deluxe.Size = new System.Drawing.Size(47, 17);
             this.deluxe.TabIndex = 4;
@@ -150,7 +150,7 @@ namespace HashChecker
             this.Controls.Add(this.fileHashGood);
             this.Controls.Add(this.processFileButton);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Code-O-Matic XL3000";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
