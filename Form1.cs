@@ -109,12 +109,39 @@ namespace HashChecker
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 testFileLocation = openFileDialog1.FileName;
-                var file = openFileDialog1.OpenFile();
                 fileName = openFileDialog1.SafeFileName;
                 src = new FileInfo(testFileLocation);
                 fileSelected.Text = src.Name;
-                outputText.Text = $"Entered hash key is {fileHashGood} \n" +
+                outputText.Text = $"Entered hash key is {hashCodeGood} \n" +
 $"and the file selected is {testFileLocation}\n {src.Name}\n src length = {src.Length} \n after hexadecimal conversion to utf-8: \n {src.LastAccessTime}";
+                using (Sha256)
+                {
+                    try
+                    {
+                        // Create a fileStream for the file.
+                        FileStream fileStream = src.Open(FileMode.Open);
+                        // Be sure it's positioned to the beginning of the stream.
+                        fileStream.Position = 0;
+                        // Compute the hash of the fileStream.
+                        hashValue = Sha256.ComputeHash(fileStream);
+                        generatedKey = BytesToString(hashValue);
+                        // Write the name and hash value of the file to the console.
+                        outputText.Text = $"Entered hash key is {fileHashGood} \n" +
+    $"and the file selected is {testFileLocation}\n {src.Name}\n raw hash = {hashValue} \n after hexadecimal conversion to utf-8: \n {BytesToString(hashValue)}";
+                        Console.Write($"{src.Name}: ");
+                        PrintByteArray(hashValue);
+                        // Close the file.
+                        fileStream.Close();
+                    }
+                    catch (IOException E)
+                    {
+                        Console.WriteLine($"I/O Exception: {E.Message}");
+                    }
+                    catch (UnauthorizedAccessException E)
+                    {
+                        Console.WriteLine($"Access Exception: {E.Message}");
+                    }
+                }
             }
         }
 
@@ -128,7 +155,7 @@ $"and the file selected is {testFileLocation}\n {src.Name}\n src length = {src.L
          */
         private void processFileButton_Click(object sender, EventArgs e)
         {
-           
+
             if (fileHashGood.Text == "")
             {
                 MessageBox.Show("You need to include the hash key to check your file", "Incorrect Information",
@@ -139,7 +166,7 @@ $"and the file selected is {testFileLocation}\n {src.Name}\n src length = {src.L
 
 
             // Initialize a SHA256 hash object.
-            else if (src != null && fileHashGood.Text != "")
+            else if (src != null)
             {
                 using (Sha256)
                 {
@@ -169,6 +196,10 @@ $"and the file selected is {testFileLocation}\n {src.Name}\n src length = {src.L
                         Console.WriteLine($"Access Exception: {E.Message}");
                     }
                 }
+            }
+            else
+            {
+                outputText.Text = $"The source file could not be found\nFile Name = {src.Name}  ";
             }
 
         }
@@ -214,6 +245,12 @@ $"and the file selected is {testFileLocation}\n {src.Name}\n src length = {src.L
         private void Form1_Load(object sender, EventArgs e)
         {
             outputText.Text = output;
-        }       
+        }
+
+        // keep global variable updated with text change
+        private void fileHashGood_TextChanged(object sender, EventArgs e)
+        {
+            hashCodeGood = fileHashGood.Text;
+        }
     }
 }

@@ -146,6 +146,7 @@ namespace HashChecker
             this.fileHashGood.Size = new System.Drawing.Size(678, 59);
             this.fileHashGood.TabIndex = 12;
             this.fileHashGood.Text = "";
+            this.fileHashGood.TextChanged += new System.EventHandler(this.fileHashGood_TextChanged);
             // 
             // Form1
             // 
