@@ -182,7 +182,7 @@ $"and the file selected is {testFileLocation}\n {src.Name}\n src length = {src.L
                         fileStream.Position = 0;
                         // Compute the hash of the fileStream.
 
-                        hashValue = Sha256.ComputeHash(fileStream);
+                        hashValue = mySHA256.ComputeHash(fileStream);
                         generatedKey = BytesToString(hashValue);
                         // Write the name and hash value of the file to the console.
                         outputText.Text = $"Entered hash key is {fileHashGood} \n" +
@@ -208,24 +208,63 @@ $"and the file selected is {testFileLocation}\n {src.Name}\n src length = {src.L
             }
 
         }
-          
-    
+
+
 
 
 
         // Open file stream to read data for hash check
-     //   StreamReader fileStream = new StreamReader(testFileLocation);
-      //      var fileContent = fileStream.ReadToEnd();
+        //   StreamReader fileStream = new StreamReader(testFileLocation);
+        //      var fileContent = fileStream.ReadToEnd();
 
 
-            // check sha256 to test .Cryptography approach
-             //   byte hashedData = Sha256.ComputeHash(fileContent.ToString());  
+        // check sha256 to test .Cryptography approach
+        //   byte hashedData = Sha256.ComputeHash(fileContent.ToString());  
 
-         //   sha256computed = ComputeSha256Hash()
-            
-
+        //   sha256computed = ComputeSha256Hash()
 
 
+
+        private string ComputeSHA256()
+        {
+            using (SHA256 mySHA256 = SHA256.Create())
+            {
+                try
+                {
+                    // Create a fileStream for the file.
+                    FileStream fileStream = src.Open(FileMode.Open);
+                    // Be sure it's positioned to the beginning of the stream.
+                    fileStream.Position = 0;
+                    // Compute the hash of the fileStream.
+
+                    hashValue = mySHA256.ComputeHash(fileStream);
+                    generatedKey = BytesToString(hashValue);
+                    // Write the name and hash value of the file to the console.
+                    outputText.Text = $"Entered hash key is {fileHashGood} \n" +
+$"and the file selected is {testFileLocation}\n {src.Name}\n raw hash = {hashValue} \n after hexadecimal conversion to utf-8: \n {BytesToString(hashValue)}";
+                    Console.Write($"{src.Name}: ");
+                    PrintByteArray(hashValue);
+                    // Close the file.
+                    fileStream.Close();
+                }
+                catch (IOException E)
+                {
+                    Console.WriteLine($"I/O Exception: {E.Message}");
+                }
+                catch (UnauthorizedAccessException E)
+                {
+                    Console.WriteLine($"Access Exception: {E.Message}");
+                }
+            }              
+
+               // Convert byte array to a string   
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < hashValue.Length; i++)
+            {
+                builder.Append(hashValue[i].ToString("x2"));
+            }
+            return builder.ToString();
+        }
         
 
         // method for computing sha256 hash
