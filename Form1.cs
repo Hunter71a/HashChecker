@@ -30,7 +30,7 @@ namespace HashChecker
         private string fileName = "";
         private string generatedKey = "";
         private Byte[] hashValue;
-       // private FileStream file;
+      //  private FileStream file;
         private FileInfo src = null;
 
 
@@ -114,7 +114,7 @@ namespace HashChecker
                 fileSelected.Text = src.Name;
                 outputText.Text = $"Entered hash key is {hashCodeGood} \n" +
 $"and the file selected is {testFileLocation}\n {src.Name}\n src length = {src.Length} \n after hexadecimal conversion to utf-8: \n {src.LastAccessTime}";
-                using (Sha256)
+                using (SHA256 mySHA256 = SHA256.Create())
                 {
                     try
                     {
@@ -123,14 +123,14 @@ $"and the file selected is {testFileLocation}\n {src.Name}\n src length = {src.L
                         // Be sure it's positioned to the beginning of the stream.
                         fileStream.Position = 0;
                         // Compute the hash of the fileStream.
-                        hashValue = Sha256.ComputeHash(fileStream);
+                        hashValue = mySHA256.ComputeHash(fileStream);
                         generatedKey = BytesToString(hashValue);
                         // Write the name and hash value of the file to the console.
                         outputText.Text = $"Entered hash key is {fileHashGood} \n" +
     $"and the file selected is {testFileLocation}\n {src.Name}\n raw hash = {hashValue} \n after hexadecimal conversion to utf-8: \n {BytesToString(hashValue)}";
                         Console.Write($"{src.Name}: ");
                         PrintByteArray(hashValue);
-                        // Close the file.
+                        // Close the file. (close file stream with calculate button
                         fileStream.Close();
                     }
                     catch (IOException E)
@@ -155,6 +155,10 @@ $"and the file selected is {testFileLocation}\n {src.Name}\n src length = {src.L
          */
         private void processFileButton_Click(object sender, EventArgs e)
         {
+           // testFileLocation = openFileDialog1.FileName;
+          //  fileName = openFileDialog1.SafeFileName;
+            //src = new FileInfo(testFileLocation);
+        //    fileSelected.Text = src.Name;
 
             if (fileHashGood.Text == "")
             {
@@ -168,7 +172,7 @@ $"and the file selected is {testFileLocation}\n {src.Name}\n src length = {src.L
             // Initialize a SHA256 hash object.
             else if (src != null)
             {
-                using (Sha256)
+                using (SHA256 mySHA256 = SHA256.Create())
                 {
                     try
                     {
@@ -177,6 +181,7 @@ $"and the file selected is {testFileLocation}\n {src.Name}\n src length = {src.L
                         // Be sure it's positioned to the beginning of the stream.
                         fileStream.Position = 0;
                         // Compute the hash of the fileStream.
+
                         hashValue = Sha256.ComputeHash(fileStream);
                         generatedKey = BytesToString(hashValue);
                         // Write the name and hash value of the file to the console.
