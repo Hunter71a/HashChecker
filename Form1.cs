@@ -24,6 +24,8 @@ namespace HashChecker
         // initialize global class variables to hold textbox values and control variables
         private string hashCodeGood = "";
         private string output = "After selecting your file and entering the hash key, relax while the Hash-O-Matic XL3000 does all the work";
+        private string completeReport = "";
+        private string matchedHashReport = "";
         private string testFileLocation = "";
         private string sha256computed = "";
         private string directory = "";
@@ -111,9 +113,9 @@ namespace HashChecker
                 testFileLocation = openFileDialog1.FileName;
                 fileName = openFileDialog1.SafeFileName;
                 src = new FileInfo(testFileLocation);
-                fileSelected.Text = src.Name;
-                outputText.Text = $"Entered hash key is {hashCodeGood} \n" +
-$"and the file selected is {testFileLocation}\n {src.Name}\n src length = {src.Length} \n after hexadecimal conversion to utf-8: \n {src.LastAccessTime}";
+                fileSelected.Text = src.Name;     
+                
+                /*
                 using (SHA256 mySHA256 = SHA256.Create())
                 {
                     try
@@ -142,6 +144,7 @@ $"and the file selected is {testFileLocation}\n {src.Name}\n src length = {src.L
                         Console.WriteLine($"Access Exception: {E.Message}");
                     }
                 }
+                */
             }
         }
 
@@ -184,9 +187,17 @@ $"and the file selected is {testFileLocation}\n {src.Name}\n src length = {src.L
 
                         hashValue = mySHA256.ComputeHash(fileStream);
                         generatedKey = BytesToString(hashValue);
+                        if (generatedKey == hashCodeGood)
+                        {
+                            outputText.Text = $"**************** MATCH DETECTED ********************\n\nIt's a match! \nHash Key Entered: / Hashed Value\n\n{hashCodeGood}\n{generatedKey}"; 
+                        }
+                        else
+                        {
+                            outputText.Text = $"*****  ALERT! HASH KEY MISMATCH!  *****\n\n\nHash Key Entered: / Hashed Value\n\n{hashCodeGood}\n{generatedKey} ";
+                        }
                         // Write the name and hash value of the file to the console.
-                        outputText.Text = $"Entered hash key is {fileHashGood} \n" +
-    $"and the file selected is {testFileLocation}\n {src.Name}\n raw hash = {hashValue} \n after hexadecimal conversion to utf-8: \n {BytesToString(hashValue)}";
+                      //  outputText.Text = $"Entered hash key is {fileHashGood} \n" +
+  //  $"and the file selected is {testFileLocation}\n {src.Name}\n raw hash = {hashValue} \n after hexadecimal conversion to utf-8: \n {BytesToString(hashValue)}";
                         Console.Write($"{src.Name}: ");
                         PrintByteArray(hashValue);
                         // Close the file.
