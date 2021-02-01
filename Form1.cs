@@ -21,19 +21,22 @@ namespace HashChecker
             InitializeComponent();
         }
 
-        // initialize global class variables to hold textbox values and control variables
+        // initialize global class variables to hold textbox values, control variables, and access points
+        private bool hashCodeMatches = false;
+        private bool testingComplete = false;
+        private bool generateKeyMode = false;
         private string hashCodeGood = "";
         private string output = "After selecting your file and entering the hash key, relax while the Hash-O-Matic XL3000 does all the work";
         private string completeReport = "";
-        private string matchedHashReport = "";
+        private string matchedHashReport = $"";
         private string testFileLocation = "";
         private string sha256computed = "";
         private string directory = "";
         private string fileName = "";
         private string generatedKey = "";
         private Byte[] hashValue;
-      //  private FileStream file;
         private FileInfo src = null;
+        private TimeSpan totalTime;
 
 
         /* test file 
@@ -79,7 +82,7 @@ namespace HashChecker
             }
             Console.WriteLine();
         }
-
+             
 
 
         /*
@@ -113,9 +116,9 @@ namespace HashChecker
                 testFileLocation = openFileDialog1.FileName;
                 fileName = openFileDialog1.SafeFileName;
                 src = new FileInfo(testFileLocation);
-                fileSelected.Text = src.Name;     
-                
-                /*
+                fileSelected.Text = src.Name;
+
+                /*  //move file processing to individual methods for each type of hash to be executed with "process" button
                 using (SHA256 mySHA256 = SHA256.Create())
                 {
                     try
@@ -158,10 +161,12 @@ namespace HashChecker
          */
         private void processFileButton_Click(object sender, EventArgs e)
         {
-           // testFileLocation = openFileDialog1.FileName;
-          //  fileName = openFileDialog1.SafeFileName;
+            // testFileLocation = openFileDialog1.FileName;
+            //  fileName = openFileDialog1.SafeFileName;
             //src = new FileInfo(testFileLocation);
-        //    fileSelected.Text = src.Name;
+            //    fileSelected.Text = src.Name;
+            //hashCodeGood = fileHashGood.Text;
+            testingComplete = false;
 
             if (fileHashGood.Text == "")
             {
@@ -170,7 +175,29 @@ namespace HashChecker
                 fileHashGood.Focus();
             }
 
+            if (src != null)
+            {
+                while (hashCodeMatches == false && testingComplete == false)
+                {
+                    ComputeSHA256();
+                    ComputeSHA384();
+                    ComputeSHA512();
+                    ComputeMD5();
+                    ComputeSHA1();
 
+                    testingComplete = true;
+                }
+                
+                outputText.Text = $"Total time to complete all tests (H:M:S): {totalTime}\n";
+                if (!hashCodeMatches) 
+                {
+                    outputText.Text += "\n*******    NO MATCH WAS FOUND!    *******";
+                        } 
+                outputText.Text += matchedHashReport + completeReport;
+            }
+
+
+            /* maintain old code block for reference
 
             // Initialize a SHA256 hash object.
             else if (src != null)
@@ -213,31 +240,20 @@ namespace HashChecker
                     }
                 }
             }
-            else
-            {
-                outputText.Text = $"The source file could not be found\nFile Name = {src.Name}  ";
-            }
+            */
+
+            //else
+            //{
+            //    outputText.Text = $"The source file could not be found\nFile Name = {src.Name}  ";
+            //}
 
         }
 
 
-
-
-
-        // Open file stream to read data for hash check
-        //   StreamReader fileStream = new StreamReader(testFileLocation);
-        //      var fileContent = fileStream.ReadToEnd();
-
-
-        // check sha256 to test .Cryptography approach
-        //   byte hashedData = Sha256.ComputeHash(fileContent.ToString());  
-
-        //   sha256computed = ComputeSha256Hash()
-
-
-
-        private string ComputeSHA256()
+        // Void method for computing SHA256 hash key 
+        private void ComputeSHA256()
         {
+            DateTime start = DateTime.Now;
             using (SHA256 mySHA256 = SHA256.Create())
             {
                 try
@@ -250,9 +266,26 @@ namespace HashChecker
 
                     hashValue = mySHA256.ComputeHash(fileStream);
                     generatedKey = BytesToString(hashValue);
+                    DateTime end = DateTime.Now;
+                    TimeSpan diff = end - start;
+                    totalTime += diff;
+                    if (generatedKey == hashCodeGood)
+                    {
+                        matchedHashReport += $"\n*******  SUCCESS: SHA256 MATCH FOUND!  *******";
+                        matchedHashReport += $" \nHash Key Entered: / Hashed Value\n\n{hashCodeGood}\n{generatedKey}";
+                        hashCodeMatches = true;
+                        matchedHashReport += $"\n\nCurrently, the best public attacks break preimage resistance for 52 out of 64 rounds of SHA-256 or 57 out of 80 rounds of SHA-512,\n and collision resistance for 46 out of 64 rounds of SHA-256";
+                        matchedHashReport += $"\nTime to complete hash in H:M:S:   {diff}";
+                    }
+                    else
+                    {
+                        completeReport += $"\n\n*****  ALERT! SHA256 HASH KEY MISMATCH!  *****\n\nSHA256 hashing failed to match key\nHash Key Entered vs Hashed Value\n{hashCodeGood}\n{generatedKey} ";
+                        completeReport += $"\nTime to complete hash in H:M:S:   {diff}"; 
+                    }
+
                     // Write the name and hash value of the file to the console.
-                    outputText.Text = $"Entered hash key is {fileHashGood} \n" +
-$"and the file selected is {testFileLocation}\n {src.Name}\n raw hash = {hashValue} \n after hexadecimal conversion to utf-8: \n {BytesToString(hashValue)}";
+                    //  outputText.Text = $"Entered hash key is {fileHashGood} \n" +
+                    //  $"and the file selected is {testFileLocation}\n {src.Name}\n raw hash = {hashValue} \n after hexadecimal conversion to utf-8: \n {BytesToString(hashValue)}";
                     Console.Write($"{src.Name}: ");
                     PrintByteArray(hashValue);
                     // Close the file.
@@ -266,20 +299,223 @@ $"and the file selected is {testFileLocation}\n {src.Name}\n raw hash = {hashVal
                 {
                     Console.WriteLine($"Access Exception: {E.Message}");
                 }
-            }              
-
-               // Convert byte array to a string   
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < hashValue.Length; i++)
-            {
-                builder.Append(hashValue[i].ToString("x2"));
             }
-            return builder.ToString();
         }
-        
+
+        // Void method for computing SHA384 
+        private void ComputeSHA384()
+        {
+            DateTime start = DateTime.Now;
+            using (SHA384 mySHA384 = SHA384.Create())
+            {
+                try
+                {
+                    // Create a fileStream for the file.
+                    FileStream fileStream = src.Open(FileMode.Open);
+                    // Be sure it's positioned to the beginning of the stream.
+                    fileStream.Position = 0;
+                    // Compute the hash of the fileStream.
+
+                    hashValue = mySHA384.ComputeHash(fileStream);
+                    generatedKey = BytesToString(hashValue);
+                    DateTime end = DateTime.Now;
+                    TimeSpan diff = end - start;
+                    totalTime += diff;
+                    if (generatedKey == hashCodeGood)
+                    {
+                        matchedHashReport += $"\n*******  SUCCESS: SHA384 MATCH FOUND!  *******";
+                        matchedHashReport += $" \nHash Key Entered: / Hashed Value\n\n{hashCodeGood}\n{generatedKey}";
+                        hashCodeMatches = true;
+                        matchedHashReport += $"\n\nCurrently, the best public attacks break preimage resistance for 52 out of 64 rounds of SHA-256 or 57 out of 80 rounds of SHA-512,\n and collision resistance for 46 out of 64 rounds of SHA-256";
+                        matchedHashReport += $"\nTime to complete hash in H:M:S:   {diff}";
+                    }
+                    else
+                    {
+                        completeReport += $"\n\n*****  ALERT! SHA364 HASH KEY MISMATCH!  *****\n\nSHA384 hashing failed to match key\nHash Key Entered vs Hashed Value\n{hashCodeGood}\n{generatedKey} ";
+                        completeReport += $"\nTime to complete hash in H:M:S:   {diff}";
+                    }
+
+                    // Write the name and hash value of the file to the console.
+                    //  outputText.Text = $"Entered hash key is {fileHashGood} \n" +
+                    //  $"and the file selected is {testFileLocation}\n {src.Name}\n raw hash = {hashValue} \n after hexadecimal conversion to utf-8: \n {BytesToString(hashValue)}";
+                    Console.Write($"{src.Name}: ");
+                    PrintByteArray(hashValue);
+                    // Close the file.
+                    fileStream.Close();
+                }
+                catch (IOException E)
+                {
+                    Console.WriteLine($"I/O Exception: {E.Message}");
+                }
+                catch (UnauthorizedAccessException E)
+                {
+                    Console.WriteLine($"Access Exception: {E.Message}");
+                }
+            }
+        }
+
+        // Void method for computing SHA384 
+        private void ComputeSHA512()
+        {
+            DateTime start = DateTime.Now;
+            using (SHA512 mySHA512 = SHA512.Create())
+            {
+                try
+                {
+                    // Create a fileStream for the file.
+                    FileStream fileStream = src.Open(FileMode.Open);
+                    // Be sure it's positioned to the beginning of the stream.
+                    fileStream.Position = 0;
+                    // Compute the hash of the fileStream.
+
+                    hashValue = mySHA512.ComputeHash(fileStream);
+                    generatedKey = BytesToString(hashValue);
+                    DateTime end = DateTime.Now;
+                    TimeSpan diff = end - start;
+                    totalTime += diff;
+                    if (generatedKey == hashCodeGood)
+                    {
+                        matchedHashReport += $"\n*******  SUCCESS: SHA512 MATCH FOUND!  *******";
+                        matchedHashReport += $" \nHash Key Entered: / Hashed Value\n\n{hashCodeGood}\n{generatedKey}";
+                        hashCodeMatches = true;
+                        matchedHashReport += $"\n\nCurrently, the best public attacks break preimage resistance for 52 out of 64 rounds of SHA-256 or 57 out of 80 rounds of SHA-512,\n and collision resistance for 46 out of 64 rounds of SHA-256";
+                        matchedHashReport += $"\nTime to complete hash in H:M:S:   {diff}";
+                    }
+                    else
+                    {
+                        completeReport += $"\n\n*****  ALERT! SHA512 HASH KEY MISMATCH!  *****\n\nSHA512 hashing failed to match key\nHash Key Entered vs Hashed Value\n{hashCodeGood}\n{generatedKey} ";
+                        completeReport += $"\nTime to complete hash in H:M:S:   {diff}";
+                    }
+
+                    // Write the name and hash value of the file to the console.
+                    //  outputText.Text = $"Entered hash key is {fileHashGood} \n" +
+                    //  $"and the file selected is {testFileLocation}\n {src.Name}\n raw hash = {hashValue} \n after hexadecimal conversion to utf-8: \n {BytesToString(hashValue)}";
+                    Console.Write($"{src.Name}: ");
+                    PrintByteArray(hashValue);
+                    // Close the file.
+                    fileStream.Close();
+                }
+                catch (IOException E)
+                {
+                    Console.WriteLine($"I/O Exception: {E.Message}");
+                }
+                catch (UnauthorizedAccessException E)
+                {
+                    Console.WriteLine($"Access Exception: {E.Message}");
+                }
+            }
+        }
+
+
+        // Void method for computing MD5 hash key 
+        private void ComputeMD5()
+        {
+            DateTime start = DateTime.Now;
+            using (MD5 myMD5 = MD5.Create())
+            {
+                try
+                {
+                    // Create a fileStream for the file.
+                    FileStream fileStream = src.Open(FileMode.Open);
+                    // Be sure it's positioned to the beginning of the stream.
+                    fileStream.Position = 0;
+                    // Compute the hash of the fileStream.
+
+                    hashValue = myMD5.ComputeHash(fileStream);
+                    generatedKey = BytesToString(hashValue);
+                    DateTime end = DateTime.Now;
+                    TimeSpan diff = end - start;
+                    totalTime += diff;
+                    if (generatedKey == hashCodeGood)
+                    {
+                        matchedHashReport += $"\n*******  SUCCESS: MD5 MATCH FOUND!  *******";
+                        matchedHashReport += $" \nHash Key Entered: / Hashed Value\n\n{hashCodeGood}\n{generatedKey}";
+                        hashCodeMatches = true;
+                        matchedHashReport += $"\nWARNING: MD5 is deprecated and considered not secure";
+                        matchedHashReport += $"\n\nCurrently, the best public attacks break preimage resistance for 52 out of 64 rounds of SHA-256 or 57 out of 80 rounds of SHA-512,\n and collision resistance for 46 out of 64 rounds of SHA-256";
+                        matchedHashReport += $"\nTime to complete hash in H:M:S:   {diff}";
+                    }
+                    else
+                    {
+                        completeReport += $"\n\n*****  ALERT! MD5 HASH KEY MISMATCH!  *****\n\nMD5 hashing failed to match key\nHash Key Entered vs Hashed Value\n{hashCodeGood}\n{generatedKey} ";
+                        completeReport += $"\nTime to complete hash in H:M:S:   {diff}";
+                    }
+
+                    // Write the name and hash value of the file to the console.
+                    //  outputText.Text = $"Entered hash key is {fileHashGood} \n" +
+                    //  $"and the file selected is {testFileLocation}\n {src.Name}\n raw hash = {hashValue} \n after hexadecimal conversion to utf-8: \n {BytesToString(hashValue)}";
+                    Console.Write($"{src.Name}: ");
+                    PrintByteArray(hashValue);
+                    // Close the file.
+                    fileStream.Close();
+                }
+                catch (IOException E)
+                {
+                    Console.WriteLine($"I/O Exception: {E.Message}");
+                }
+                catch (UnauthorizedAccessException E)
+                {
+                    Console.WriteLine($"Access Exception: {E.Message}");
+                }
+            }
+        }
+
+
+        // Void method for computing SHA1 hash key 
+        private void ComputeSHA1()
+        {
+            DateTime start = DateTime.Now;
+            using (SHA1 mySHA1 = SHA1.Create())
+            {
+                try
+                {
+                    // Create a fileStream for the file.
+                    FileStream fileStream = src.Open(FileMode.Open);
+                    // Be sure it's positioned to the beginning of the stream.
+                    fileStream.Position = 0;
+                    // Compute the hash of the fileStream.
+
+                    hashValue = mySHA1.ComputeHash(fileStream);
+                    generatedKey = BytesToString(hashValue);
+                    DateTime end = DateTime.Now;
+                    TimeSpan diff = end - start;
+                    totalTime += diff;
+                    if (generatedKey == hashCodeGood)
+                    {
+                        matchedHashReport += $"\n*******  SUCCESS: SHA1 MATCH FOUND!  *******";
+                        matchedHashReport += $" \nHash Key Entered: / Hashed Value\n\n{hashCodeGood}\n{generatedKey}";
+                        hashCodeMatches = true;
+                        matchedHashReport += $"\nWARNING: SHA1 is deprecated and considered not secure";
+                        matchedHashReport += $"\n\nCurrently, the best public attacks break preimage resistance for 52 out of 64 rounds of SHA-256 or 57 out of 80 rounds of SHA-512,\n and collision resistance for 46 out of 64 rounds of SHA-256";
+                        matchedHashReport += $"\nTime to complete hash in H:M:S:   {diff}";
+                    }
+                    else
+                    {
+                        completeReport += $"\n\n*****  ALERT! SHA1 HASH KEY MISMATCH!  *****\n\nSHA1 hashing failed to match key\nHash Key Entered vs Hashed Value\n{hashCodeGood}\n{generatedKey} ";
+                        completeReport += $"\nTime to complete hash in H:M:S:   {diff}";
+                    }
+
+                    // Write the name and hash value of the file to the console.
+                    //  outputText.Text = $"Entered hash key is {fileHashGood} \n" +
+                    //  $"and the file selected is {testFileLocation}\n {src.Name}\n raw hash = {hashValue} \n after hexadecimal conversion to utf-8: \n {BytesToString(hashValue)}";
+                    Console.Write($"{src.Name}: ");
+                    PrintByteArray(hashValue);
+                    // Close the file.
+                    fileStream.Close();
+                }
+                catch (IOException E)
+                {
+                    Console.WriteLine($"I/O Exception: {E.Message}");
+                }
+                catch (UnauthorizedAccessException E)
+                {
+                    Console.WriteLine($"Access Exception: {E.Message}");
+                }
+            }
+        }
 
         // method for computing sha256 hash
-        private string ComputeSha256Hash(string rawData)
+        private string ComputeSha256HashWithPassedParameters(string rawData)
         {
             // Create a SHA256   
             using (SHA256 sha256Hash = SHA256.Create())
