@@ -28,36 +28,17 @@ namespace HashChecker
         private string hashCodeGood = "";
         private string output = "After selecting your file and entering the hash key, relax while the Hash-O-Matic XL3000 does all the work";
         private string completeReport = "";
+        private string hashesOnly= "";
         private string matchedHashReport = $"";
         private string testFileLocation = "";
-        private string sha256computed = "";
-        private string directory = "";
         private string fileName = "";
         private string generatedKey = "";
         private Byte[] hashValue;
         private FileInfo src = null;
         private TimeSpan totalTime;
 
-
-        /* test file 
-         
-         Name: a.7z
-        Size: 1201092 bytes (1172 KiB)
-        SHA256: 55BD7777EDD36CB10CA2F735DC98DAD2AA70CCDDEE072D4226BE45F108D0726A
-         *
-         */
-
-
-
-        // The cryptographic service providers.
-        private SHA256 Sha256 = SHA256.Create();
-
-
-
-
-
         // Utilities
-
+        
         // Return a byte array as a sequence of hex values.
         public static string BytesToString(byte[] bytes)
         {
@@ -83,8 +64,6 @@ namespace HashChecker
             Console.WriteLine();
         }
              
-
-
         /*
          * event handler for selectFile button
          *
@@ -99,14 +78,7 @@ namespace HashChecker
 
                 CheckFileExists = true,
                 CheckPathExists = true,
-
-
-
-                //  DefaultExt = "txt",
-                //    Filter = "txt files (*.txt)|*.txt",
-                //   FilterIndex = 2,
                 RestoreDirectory = true,
-
                 ReadOnlyChecked = true,
                 ShowReadOnly = true
             };
@@ -117,40 +89,26 @@ namespace HashChecker
                 fileName = openFileDialog1.SafeFileName;
                 src = new FileInfo(testFileLocation);
                 fileSelected.Text = src.Name;
-
-                /*  //move file processing to individual methods for each type of hash to be executed with "process" button
-                using (SHA256 mySHA256 = SHA256.Create())
-                {
-                    try
-                    {
-                        // Create a fileStream for the file.
-                        FileStream fileStream = src.Open(FileMode.Open);
-                        // Be sure it's positioned to the beginning of the stream.
-                        fileStream.Position = 0;
-                        // Compute the hash of the fileStream.
-                        hashValue = mySHA256.ComputeHash(fileStream);
-                        generatedKey = BytesToString(hashValue);
-                        // Write the name and hash value of the file to the console.
-                        outputText.Text = $"Entered hash key is {fileHashGood} \n" +
-    $"and the file selected is {testFileLocation}\n {src.Name}\n raw hash = {hashValue} \n after hexadecimal conversion to utf-8: \n {BytesToString(hashValue)}";
-                        Console.Write($"{src.Name}: ");
-                        PrintByteArray(hashValue);
-                        // Close the file. (close file stream with calculate button
-                        fileStream.Close();
-                    }
-                    catch (IOException E)
-                    {
-                        Console.WriteLine($"I/O Exception: {E.Message}");
-                    }
-                    catch (UnauthorizedAccessException E)
-                    {
-                        Console.WriteLine($"Access Exception: {E.Message}");
-                    }
-                }
-                */
+                calculateRawHashValues();                
             }
         }
 
+
+        private void calculateRawHashValues()
+        {
+            ComputeSHA256();
+            hashesOnly = $"\t<SHA256>\n{generatedKey}\n\n";
+            ComputeSHA384();
+            hashesOnly += $"\t<SHA384>\n{generatedKey}\n\n";
+            ComputeSHA512();
+            hashesOnly += $"\t<SHA512>\n{generatedKey}\n\n";
+            ComputeMD5();
+            hashesOnly += $"\t<MD5>\n{generatedKey}\n\n";
+            ComputeSHA1();
+            hashesOnly += $"\t<SHA1>\n{generatedKey}\n\n";
+            outputText.Text = $"Assorted Hash values for selected file: {fileName}\n\n";
+            outputText.Text += $"{hashesOnly}";
+        }
 
 
         /*  
@@ -161,11 +119,6 @@ namespace HashChecker
          */
         private void processFileButton_Click(object sender, EventArgs e)
         {
-            // testFileLocation = openFileDialog1.FileName;
-            //  fileName = openFileDialog1.SafeFileName;
-            //src = new FileInfo(testFileLocation);
-            //    fileSelected.Text = src.Name;
-            //hashCodeGood = fileHashGood.Text;
             testingComplete = false;
 
             if (fileHashGood.Text == "")
@@ -279,7 +232,7 @@ namespace HashChecker
                     }
                     else
                     {
-                        completeReport += $"\n\n*****  ALERT! SHA256 HASH KEY MISMATCH!  *****\n\nSHA256 hashing failed to match key\nHash Key Entered vs Hashed Value\n{hashCodeGood}\n{generatedKey} ";
+                        completeReport += $"\n\n*****  SHA256 HASH KEY MISMATCH!  *****\n\nSHA256 hashing failed to match key\nHash Key Entered vs Hashed Value\n{hashCodeGood}\n{generatedKey} ";
                         completeReport += $"\nTime to complete hash in H:M:S:   {diff}"; 
                     }
 
@@ -331,7 +284,7 @@ namespace HashChecker
                     }
                     else
                     {
-                        completeReport += $"\n\n*****  ALERT! SHA364 HASH KEY MISMATCH!  *****\n\nSHA384 hashing failed to match key\nHash Key Entered vs Hashed Value\n{hashCodeGood}\n{generatedKey} ";
+                        completeReport += $"\n\n*****  SHA364 HASH KEY MISMATCH!  *****\n\nSHA384 hashing failed to match key\nHash Key Entered vs Hashed Value\n{hashCodeGood}\n{generatedKey} ";
                         completeReport += $"\nTime to complete hash in H:M:S:   {diff}";
                     }
 
@@ -383,7 +336,7 @@ namespace HashChecker
                     }
                     else
                     {
-                        completeReport += $"\n\n*****  ALERT! SHA512 HASH KEY MISMATCH!  *****\n\nSHA512 hashing failed to match key\nHash Key Entered vs Hashed Value\n{hashCodeGood}\n{generatedKey} ";
+                        completeReport += $"\n\n*****  SHA512 HASH KEY MISMATCH!  *****\n\nSHA512 hashing failed to match key\nHash Key Entered vs Hashed Value\n{hashCodeGood}\n{generatedKey} ";
                         completeReport += $"\nTime to complete hash in H:M:S:   {diff}";
                     }
 
@@ -437,7 +390,7 @@ namespace HashChecker
                     }
                     else
                     {
-                        completeReport += $"\n\n*****  ALERT! MD5 HASH KEY MISMATCH!  *****\n\nMD5 hashing failed to match key\nHash Key Entered vs Hashed Value\n{hashCodeGood}\n{generatedKey} ";
+                        completeReport += $"\n\n*****  MD5 HASH KEY MISMATCH!  *****\n\nMD5 hashing failed to match key\nHash Key Entered vs Hashed Value\n{hashCodeGood}\n{generatedKey} ";
                         completeReport += $"\nTime to complete hash in H:M:S:   {diff}";
                     }
 
@@ -459,7 +412,6 @@ namespace HashChecker
                 }
             }
         }
-
 
         // Void method for computing SHA1 hash key 
         private void ComputeSHA1()
@@ -491,13 +443,11 @@ namespace HashChecker
                     }
                     else
                     {
-                        completeReport += $"\n\n*****  ALERT! SHA1 HASH KEY MISMATCH!  *****\n\nSHA1 hashing failed to match key\nHash Key Entered vs Hashed Value\n{hashCodeGood}\n{generatedKey} ";
+                        completeReport += $"\n\n*****  SHA1 HASH KEY MISMATCH!  *****\n\nSHA1 hashing failed to match key\nHash Key Entered vs Hashed Value\n{hashCodeGood}\n{generatedKey} ";
                         completeReport += $"\nTime to complete hash in H:M:S:   {diff}";
                     }
 
                     // Write the name and hash value of the file to the console.
-                    //  outputText.Text = $"Entered hash key is {fileHashGood} \n" +
-                    //  $"and the file selected is {testFileLocation}\n {src.Name}\n raw hash = {hashValue} \n after hexadecimal conversion to utf-8: \n {BytesToString(hashValue)}";
                     Console.Write($"{src.Name}: ");
                     PrintByteArray(hashValue);
                     // Close the file.

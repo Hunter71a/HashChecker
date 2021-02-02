@@ -58,11 +58,11 @@ namespace HashChecker
             // 
             this.fileHashGoodLabel.AutoSize = true;
             this.fileHashGoodLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fileHashGoodLabel.Location = new System.Drawing.Point(316, 280);
+            this.fileHashGoodLabel.Location = new System.Drawing.Point(263, 275);
             this.fileHashGoodLabel.Name = "fileHashGoodLabel";
-            this.fileHashGoodLabel.Size = new System.Drawing.Size(170, 26);
+            this.fileHashGoodLabel.Size = new System.Drawing.Size(269, 26);
             this.fileHashGoodLabel.TabIndex = 2;
-            this.fileHashGoodLabel.Text = "Enter hash code";
+            this.fileHashGoodLabel.Text = "Enter expected hash value";
             // 
             // title
             // 
@@ -111,7 +111,7 @@ namespace HashChecker
             // 
             // outputText
             // 
-            this.outputText.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.outputText.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.outputText.Location = new System.Drawing.Point(78, 435);
             this.outputText.Name = "outputText";
             this.outputText.Size = new System.Drawing.Size(678, 305);
