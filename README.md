@@ -5,4 +5,4 @@ from System.Windows.Cryptology to quickly and conveniently test your SHA256 or o
 
 Fig 17.6  Picture of the working application
 
-![Search Screen](https://github.com/Hunter71a/HashChecker/blob/master/picture-of-app.PNG)
+![Search Screen](https://github.com/Hunter71a/HashChecker/blob/master/WorkingProgram.PNG)
