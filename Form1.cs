@@ -237,10 +237,9 @@ namespace HashChecker
                     }
 
                     // Write the name and hash value of the file to the console.
-                    //  outputText.Text = $"Entered hash key is {fileHashGood} \n" +
-                    //  $"and the file selected is {testFileLocation}\n {src.Name}\n raw hash = {hashValue} \n after hexadecimal conversion to utf-8: \n {BytesToString(hashValue)}";
                     Console.Write($"{src.Name}: ");
                     PrintByteArray(hashValue);
+                   
                     // Close the file.
                     fileStream.Close();
                 }
@@ -384,7 +383,7 @@ namespace HashChecker
                         matchedHashReport += $"\n*******  SUCCESS: MD5 MATCH FOUND!  *******";
                         matchedHashReport += $" \nHash Key Entered: / Hashed Value\n\n{hashCodeGood}\n{generatedKey}";
                         hashCodeMatches = true;
-                        matchedHashReport += $"\nWARNING: MD5 is deprecated and considered not secure";
+                        matchedHashReport += $"\nWARNING: MD5 is deprecated and not considered secure";
                         matchedHashReport += $"\n\nCurrently, the best public attacks break preimage resistance for 52 out of 64 rounds of SHA-256 or 57 out of 80 rounds of SHA-512,\n and collision resistance for 46 out of 64 rounds of SHA-256";
                         matchedHashReport += $"\nTime to complete hash in H:M:S:   {diff}";
                     }
